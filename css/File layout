@@ -1,0 +1,5 @@
+index.html
+css/{base,layout,components,pages}.css
+js/app.js
+js/{camera,detector,analyzer,recommender,ui,router,storage}.js
+js/data/hairstyles.js
