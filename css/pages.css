@@ -1,0 +1,19 @@
+/* Additional page-specific tweaks & responsive polish */
+@media (max-width: 720px) {
+  .shape-card { grid-template-columns: 96px 1fr; }
+  .shape-visual { width: 96px; height: 110px; }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .reco-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .section-head { flex-direction: column; align-items: stretch; }
+  .filters { flex-wrap: wrap; }
+  .history-item { grid-template-columns: 52px 1fr; }
+  .history-item .btn { grid-column: 1 / -1; }
+}
+@media (max-width: 400px) {
+  .camera-controls .btn { flex: 1 1 auto; justify-content: center; }
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
