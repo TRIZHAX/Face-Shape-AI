@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0d17" />
+<meta name="description" content="AI Face Shape & Haircut Advisor — analyze your face and get personalized hairstyle recommendations, 100% on-device." />
+<title>AI Face Shape & Haircut Advisor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./css/base.css" />
+<link rel="stylesheet" href="./css/layout.css" />
+<link rel="stylesheet" href="./css/components.css" />
+<link rel="stylesheet" href="./css/pages.css" />
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💇</text></svg>" />
+</head>
+<body>
+<div class="bg-anim" aria-hidden="true">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-overlay"></div>
+</div>
+
+<header class="app-header glass">
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="28" height="28"><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><path d="M16 3c6 0 11 5 11 12 0 7-5 14-11 14S5 22 5 15C5 8 10 3 16 3zm-4 12a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm8 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-4 6c-1.7 0-3.2.5-4.4 1.3-.4.3-.2 1 .3 1h8.2c.5 0 .7-.7.3-1A7.9 7.9 0 0016 21z" fill="url(#g)"/></svg>
+    </div>
+    <div>
+      <h1>Face Shape<span class="brand-dot">·</span>AI</h1>
+      <span class="brand-sub">on-device haircut advisor</span>
+    </div>
+  </div>
+  <nav class="top-nav" aria-label="Primary">
+    <button class="nav-btn active" data-route="scan">Scan</button>
+    <button class="nav-btn" data-route="results">Results</button>
+    <button class="nav-btn" data-route="favorites">Favorites</button>
+    <button class="nav-btn" data-route="history">History</button>
+    <button class="nav-btn" data-route="settings">Settings</button>
+    <button class="nav-btn" data-route="about">About</button>
+  </nav>
+  <div class="header-actions">
+    <button id="themeToggle" class="icon-btn" aria-label="Toggle theme" title="Toggle theme">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 12.5a8 8 0 01-11 7.5A9 9 0 0021 11a8.5 8.5 0 00-.1-1.4 6 6 0 01-.9 2.9z"/></svg>
+    </button>
+    <button id="menuToggle" class="icon-btn mobile-only" aria-label="Menu">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main" class="app-main">
+  <!-- Scan Page -->
+  <section class="page active" data-page="scan">
+    <div class="page-head">
+      <h2>Live Face Scan</h2>
+      <p class="muted">All analysis runs locally in your browser. No photos ever leave your device.</p>
+    </div>
+    <div class="scan-grid">
+      <div class="camera-card glass">
+        <div class="camera-wrap" id="cameraWrap">
+          <video id="video" playsinline autoplay muted></video>
+          <canvas id="overlay"></canvas>
+          <div class="scan-anim" id="scanAnim" hidden>
+            <div class="scan-line"></div>
+            <div class="scan-frame"></div>
+          </div>
+          <div class="camera-empty" id="cameraEmpty">
+            <div class="empty-inner">
+              <svg viewBox="0 0 24 24" width="46" height="46" fill="currentColor"><path d="M9 4l-1.5 2H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-3.5L15 4H9zm3 4a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6z"/></svg>
+              <p>Camera off</p>
+              <span class="muted">Start the camera to begin your scan.</span>
+            </div>
+          </div>
+        </div>
+        <div class="camera-controls">
+          <button id="startCam" class="btn btn-primary">Start Camera</button>
+          <button id="switchCam" class="btn" disabled>Switch</button>
+          <button id="captureBtn" class="btn btn-accent" disabled>Capture &amp; Analyze</button>
+          <button id="retakeBtn" class="btn" hidden>Retake</button>
+        </div>
+        <div class="progress-wrap" id="progressWrap" hidden>
+          <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+          <span id="progressLabel" class="muted">Loading model…</span>
+        </div>
+      </div>
+      <aside class="tips-card glass">
+        <h3>Tips for best results</h3>
+        <ul class="tips">
+          <li><span class="dot"></span>Face the camera directly at eye level.</li>
+          <li><span class="dot"></span>Use bright, even lighting on your face.</li>
+          <li><span class="dot"></span>Pull hair away from forehead &amp; cheeks.</li>
+          <li><span class="dot"></span>Neutral expression, mouth closed.</li>
+          <li><span class="dot"></span>Remove glasses if possible.</li>
+        </ul>
+        <div class="privacy-note">
+          <strong>Private by design.</strong>
+          Camera frames stay on-device. No uploads, no cloud, no tracking.
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Results Page -->
+  <section class="page" data-page="results">
+    <div class="page-head">
+      <h2>Analysis Dashboard</h2>
+      <p class="muted">Your face shape, measurements, and recommended styles.</p>
+    </div>
+    <div id="resultsEmpty" class="empty-state glass">
+      <h3>No scan yet</h3>
+      <p class="muted">Run a scan to see your face shape, measurements, and top 10 hairstyle picks.</p>
+      <button class="btn btn-primary" data-goto="scan">Start Scan</button>
+    </div>
+    <div id="resultsView" hidden>
+      <div class="results-top">
+        <div class="shape-card glass">
+          <div class="shape-visual" id="shapeVisual"></div>
+          <div class="shape-info">
+            <span class="chip" id="shapeConfidence">—</span>
+            <h3 id="shapeName">—</h3>
+            <p id="shapeDesc" class="muted">—</p>
+          </div>
+        </div>
+        <div class="metrics-card glass">
+          <h3>Facial Metrics</h3>
+          <div class="metrics-grid" id="metricsGrid"></div>
+        </div>
+      </div>
+
+      <div class="reco-section">
+        <div class="section-head">
+          <h3>Top 10 Hairstyles</h3>
+          <div class="filters">
+            <input type="search" id="hairSearch" placeholder="Search hairstyles…" aria-label="Search" />
+            <select id="hairFilter" aria-label="Filter">
+              <option value="all">All lengths</option>
+              <option value="short">Short</option>
+              <option value="medium">Medium</option>
+              <option value="long">Long</option>
+            </select>
+          </div>
+        </div>
+        <div class="reco-grid" id="recoGrid"></div>
+      </div>
+
+      <div class="split-2">
+        <div class="glass panel">
+          <h3>Best Picks</h3>
+          <ul class="best-list" id="bestList"></ul>
+        </div>
+        <div class="glass panel">
+          <h3>Styles to Avoid</h3>
+          <ul class="avoid-list" id="avoidList"></ul>
+        </div>
+      </div>
+
+      <div class="split-2">
+        <div class="glass panel">
+          <h3>Styling &amp; Care</h3>
+          <div id="careBlock" class="care-block"></div>
+        </div>
+        <div class="glass panel">
+          <h3>Products &amp; Colors</h3>
+          <div id="productsBlock" class="products-block"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Favorites -->
+  <section class="page" data-page="favorites">
+    <div class="page-head"><h2>Favorites</h2><p class="muted">Hairstyles you've saved for later.</p></div>
+    <div id="favoritesGrid" class="reco-grid"></div>
+    <div id="favoritesEmpty" class="empty-state glass" hidden>
+      <h3>No favorites yet</h3>
+      <p class="muted">Tap the heart on a recommendation to save it here.</p>
+    </div>
+  </section>
+
+  <!-- History -->
+  <section class="page" data-page="history">
+    <div class="page-head">
+      <h2>Scan History</h2>
+      <p class="muted">Local, private, only on this device.</p>
+    </div>
+    <div id="historyList" class="history-list"></div>
+    <div id="historyEmpty" class="empty-state glass" hidden>
+      <h3>No history</h3>
+      <p class="muted">Complete a scan to build your history.</p>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section class="page" data-page="settings">
+    <div class="page-head"><h2>Settings</h2><p class="muted">Configure your preferences. Everything is stored locally.</p></div>
+    <div class="settings-grid">
+      <div class="glass panel">
+        <h3>Appearance</h3>
+        <div class="setting-row">
+          <label for="themeSelect">Theme</label>
+          <select id="themeSelect"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select>
+        </div>
+        <div class="setting-row">
+          <label for="animToggle">Animated background</label>
+          <input type="checkbox" id="animToggle" checked />
+        </div>
+      </div>
+      <div class="glass panel">
+        <h3>Camera</h3>
+        <div class="setting-row">
+          <label for="mirrorToggle">Mirror preview</label>
+          <input type="checkbox" id="mirrorToggle" checked />
+        </div>
+        <div class="setting-row">
+          <label for="hqToggle">High quality capture</label>
+          <input type="checkbox" id="hqToggle" checked />
+        </div>
+      </div>
+      <div class="glass panel">
+        <h3>Personalization</h3>
+        <div class="setting-row">
+          <label for="genderSelect">Style preference</label>
+          <select id="genderSelect"><option value="any">Any</option><option value="masc">Masculine</option><option value="fem">Feminine</option><option value="androgynous">Androgynous</option></select>
+        </div>
+        <div class="setting-row">
+          <label for="hairTypeSelect">Hair type</label>
+          <select id="hairTypeSelect"><option value="any">Any</option><option value="straight">Straight</option><option value="wavy">Wavy</option><option value="curly">Curly</option><option value="coily">Coily</option></select>
+        </div>
+      </div>
+      <div class="glass panel danger">
+        <h3>Data</h3>
+        <p class="muted">All data lives in your browser (IndexedDB &amp; LocalStorage).</p>
+        <div class="row-actions">
+          <button id="exportData" class="btn">Export</button>
+          <button id="importData" class="btn">Import</button>
+          <input type="file" id="importFile" accept="application/json" hidden />
+          <button id="clearData" class="btn btn-danger">Clear all data</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="page" data-page="about">
+    <div class="page-head"><h2>About</h2><p class="muted">A private, on-device face-shape and hairstyle advisor.</p></div>
+    <div class="about-grid">
+      <div class="glass panel">
+        <h3>How it works</h3>
+        <p>The app uses <b>TensorFlow.js</b> in your browser to detect facial landmarks, computes proportions, and classifies your face shape. Recommendations blend a curated hairstyle catalog with a light on-device learning loop that adapts to your likes, dislikes, and ratings.</p>
+      </div>
+      <div class="glass panel">
+        <h3>Privacy</h3>
+        <ul class="tips">
+          <li><span class="dot"></span>No photos ever leave your device.</li>
+          <li><span class="dot"></span>No accounts, cookies, analytics, or trackers.</li>
+          <li><span class="dot"></span>Works fully offline after first load.</li>
+        </ul>
+      </div>
+      <div class="glass panel">
+        <h3>Face shapes covered</h3>
+        <p>Oval, Round, Square, Rectangle, Oblong, Heart, Diamond, Triangle.</p>
+      </div>
+      <div class="glass panel">
+        <h3>Tech stack</h3>
+        <p>Static HTML5, CSS3, Vanilla JS (ES6 modules), TensorFlow.js, MediaPipe FaceMesh, IndexedDB &amp; LocalStorage.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toastRoot" class="toast-root" aria-live="polite"></div>
+
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
